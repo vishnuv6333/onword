@@ -1,11 +1,11 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:email_password_login/model/user_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:onword/screens/screens.dart';
+import '../controller/homeController.dart';
+import '../controller/profileuploaded.dart';
 import 'package:get/get.dart';
-import '../model/user_model.dart';
 
 // import 'login_screen.dart';
 
@@ -17,25 +17,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  User? user = FirebaseAuth.instance.currentUser;
-  UserModel loggedInUser = UserModel();
-
-  @override
-  void initState() {
-    super.initState();
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      loggedInUser = UserModel.fromMap(value.data());
-    });
-  }
+  Homectrl homeControllers = Get.put(Homectrl());
+  ProductController productController = Get.put(ProductController());
+    final store = GetStorage();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.green,
         title: const Text("Welcome"),
         centerTitle: true,
       ),
@@ -46,10 +36,24 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              SizedBox(
-                height: 150,
-                child: Image.asset("assets/logo.png", fit: BoxFit.contain),
-              ),
+               InkWell(
+                  onTap: () async {
+                    print("object");
+                    productController.openGallery(context);
+                  },
+                  child: Obx(
+                    ()=> SizedBox(
+                        width: 70,
+                        height: 150,
+                        child: productController.uploadpath.value == '' &&  store.read('image')==null
+                            ? Image.asset("assets/img/login.png",
+                                fit: BoxFit.contain)
+                            : Image.network(
+                              productController.uploadpath.value==''?  store.read('image'): productController.uploadpath.value,
+                              )),
+                  ),
+                ),
+              
               const Text(
                 "Welcome Back",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -57,16 +61,20 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 10,
               ),
-              Text("${loggedInUser.name}",
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w500,
-                  )),
-              Text("${loggedInUser.email}",
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w500,
-                  )),
+              Obx(
+                () => Text("${homeControllers.name}",
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w500,
+                    )),
+              ),
+              Obx(
+                () => Text("${homeControllers.email}",
+                    style: const TextStyle(
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w500,
+                    )),
+              ),
               const SizedBox(
                 height: 15,
               ),
@@ -85,6 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
   // the logout function
   Future<void> logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
+    store.remove('user');
+    
     Get.offAll(LoginScreen());
   }
 }

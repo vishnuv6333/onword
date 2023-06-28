@@ -1,6 +1,4 @@
-// import 'package:email_password_login/screens/home_screen.dart';
-// import 'package:email_password_login/screens/registration_screen.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:onword/screens/home.dart';
 
 import 'signup_screen.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -22,8 +19,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // editing controller
-  final TextEditingController emailController = new TextEditingController();
-  final TextEditingController passwordController = new TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   // firebase
   final _auth = FirebaseAuth.instance;
@@ -68,13 +65,14 @@ class _LoginScreenState extends State<LoginScreen> {
         controller: passwordController,
         obscureText: true,
         validator: (value) {
-          RegExp regex = new RegExp(r'^.{6,}$');
+          RegExp regex =  RegExp(r'^.{6,}$');
           if (value!.isEmpty) {
             return ("Password is required for login");
           }
           if (!regex.hasMatch(value)) {
             return ("Enter Valid Password(Min. 6 Character)");
           }
+          return null;
         },
         onSaved: (value) {
           passwordController.text = value!;
@@ -145,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               //     MaterialPageRoute(
                               //         builder: (context) =>
                               //             RegistrationScreen()));
-                              Get.to(RegistrationScreen());
+                              Get.to(const RegistrationScreen());
                             },
                             child: const Text(
                               "SignUp",

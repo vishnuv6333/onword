@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:onword/screens/home.dart';
 import 'package:onword/screens/screens.dart';
 import '../model/user_model.dart';
 import 'package:get/get.dart';
@@ -96,6 +95,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           if (!regex.hasMatch(value)) {
             return ("Enter Valid Password(Min. 6 Character)");
           }
+          return null;
         },
         onSaved: (value) {
           passwordEditingController.text = value!;
@@ -229,6 +229,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     userModel.uid = user.uid;
     userModel.name = firstNameEditingController.text;
     userModel.password = passwordEditingController.text;
+    userModel.image='';
 
     await firebaseFirestore
         .collection("users")
