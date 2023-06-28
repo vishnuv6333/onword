@@ -11,7 +11,7 @@ class Homectrl extends GetxController {
   RxString? name = ''.obs;
   RxString? email = ''.obs;
   RxString? id = ''.obs;
-  RxString? image=''.obs;
+  RxString? image = ''.obs;
   @override
   void onInit() {
     super.onInit();
@@ -23,9 +23,14 @@ class Homectrl extends GetxController {
       loggedInUser = UserModel.fromMap(value.data());
       name!.value = loggedInUser.name!;
       email!.value = loggedInUser.email!;
-      image!.value=loggedInUser.image!;
+      image!.value = loggedInUser.image!;
       id!.value = loggedInUser.uid!;
       final store = GetStorage();
+      print("adsgfgdsafg");
+      
+      print(image!.value);
+     
+
       store.write('user', loggedInUser.uid!);
     });
   }

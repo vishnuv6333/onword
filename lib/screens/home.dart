@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -19,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Homectrl homeControllers = Get.put(Homectrl());
   ProductController productController = Get.put(ProductController());
-    final store = GetStorage();
+  final store = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -36,24 +35,31 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-               InkWell(
-                  onTap: () async {
-                    print("object");
-                    productController.openGallery(context);
-                  },
-                  child: Obx(
-                    ()=> SizedBox(
-                        width: 70,
-                        height: 150,
-                        child: productController.uploadpath.value == '' &&  store.read('image')==null
-                            ? Image.asset("assets/img/login.png",
-                                fit: BoxFit.contain)
-                            : Image.network(
-                              productController.uploadpath.value==''?  store.read('image'): productController.uploadpath.value,
-                              )),
-                  ),
+              InkWell(
+                onTap: () async {
+                  productController.openGallery(context);
+                },
+                child: Obx(
+                  () => productController.uploadpath.value == '' &&
+                          store.read('image') == null
+                      ? homeControllers.image!.value == ''
+                          ? const CircleAvatar(
+                              radius: 50,
+                              backgroundImage:
+                                  AssetImage("assets/img/login.png"))
+                          : CircleAvatar(
+                              radius: 50,
+                              backgroundImage:
+                                  NetworkImage(homeControllers.image!.value))
+                      : CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage(
+                            productController.uploadpath.value == ''
+                                ? store.read('image')
+                                : productController.uploadpath.value,
+                          )),
                 ),
-              
+              ),
               const Text(
                 "Welcome Back",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -92,9 +98,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // the logout function
   Future<void> logout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
     store.remove('user');
-    
+    store.remove('image');
+    await FirebaseAuth.instance.signOut();
+
+    Get.delete();
+
     Get.offAll(LoginScreen());
   }
 }
